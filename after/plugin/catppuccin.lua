@@ -48,3 +48,6 @@ require("catppuccin").setup({
 
 -- setup must be called before loading
 vim.cmd.colorscheme "catppuccin"
+vim.api.nvim_set_hl(0, 'LineNrAbove', { fg='#51B3EC' })
+vim.api.nvim_set_hl(0, 'LineNr', { fg='white'})
+vim.api.nvim_set_hl(0, 'LineNrBelow', { fg='#51B3EC'})
