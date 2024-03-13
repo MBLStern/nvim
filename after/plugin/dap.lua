@@ -1,30 +1,50 @@
 local dap = require('dap')
 
--- debug adabter configurations
-dap.adapters.lldb = {
-    type = 'executable',
-    -- absolute path is important here, otherwise the argument in the `runInTerminal` request will default to $CWD/lldb-vscode
-    command = '/usr/bin/lldb',
-    name = "lldb"
-}
+-- dapui setup
+local dapui = require('dapui')
 
+require('dapui').setup()
+
+dap.listeners.before.attach.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  dapui.close()
+end
+-- debug adabter configurations
+
+dap.adapters.lldb = {
+  type = 'executable',
+  command = '/usr/bin/lldb-vscode', -- adjust as needed, must be absolute path
+  name = 'lldb'
+}
 
 -- language configurations
 dap.configurations.cpp = {
-    {
-        name = "Launch",
-        type = "lldb",
-        request = "launch",
-        program = function()
-            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-        end,
-        cwd = '${workspaceFolder}',
-        stopOnEntry = false,
-        args = {},
-        runInTerminal = true,
-    },
+  {
+    name = 'Launch',
+    type = 'lldb',
+    request = 'launch',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = '${workspaceFolder}',
+    stopOnEntry = false,
+    args = {},
+  },
 }
 
+dap.configurations.c = dap.configurations.cpp
+
+dap.configurations.rust = dap.configurations.cpp
+
+require('dap-go').setup()
 -- Keymaps
 
 vim.keymap.set('n', '<F5>', function() dap.continue() end)
