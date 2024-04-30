@@ -1,4 +1,5 @@
 local lsp_zero = require('lsp-zero')
+
 lsp_zero.extend_lspconfig()
 
 lsp_zero.on_attach(function(client, bufnr)
@@ -26,3 +27,10 @@ require('mason-lspconfig').setup({
 
 -- keymaps
 vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end)
+
+-- auto format
+vim.api.nvim_create_autocmd("BufWritePost", {
+    callback = function()
+        vim.lsp.buf.format()
+    end
+})
