@@ -23,6 +23,10 @@ require('mason-lspconfig').setup({
         }
     })
 })
+require('lspconfig')['vhdl_ls'].setup({
+    on_attach = on_attach,
+    capabilities = capabilities
+})
 
 -- keymaps
 vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end)
