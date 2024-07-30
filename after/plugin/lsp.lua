@@ -31,6 +31,7 @@ require('lspconfig')['vhdl_ls'].setup({
 
 -- keymaps
 vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end)
+vim.keymap.set("n", "<leader>gd", function() vim.lsp.buf.definition() end)
 
 -- auto format
 vim.api.nvim_create_autocmd("BufWritePost", {

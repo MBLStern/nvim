@@ -1,5 +1,7 @@
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>gp", ":e #<CR>")
+
 
 -- add a quick error check for a go program
 vim.keymap.set(
