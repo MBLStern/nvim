@@ -46,4 +46,5 @@ return require('packer').startup(function(use)
             vim.g.vimtex_view_method = "zathura"
         end
     }
+    use('Aasim-A/scrollEOF.nvim')
 end)
