@@ -34,6 +34,7 @@ return require('packer').startup(function(use)
         use { 'mfussenegger/nvim-dap',
             requires = { "rcarriga/nvim-dap-ui",
                 "leoluz/nvim-dap-go",
+                "mfussenegger/nvim-jdtls",
                 "nvim-neotest/nvim-nio" },
         },
         use("ThePrimeagen/harpoon")
