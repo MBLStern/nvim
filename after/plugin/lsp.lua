@@ -64,11 +64,6 @@ require('lspconfig')['vhdl_ls'].setup({
     capabilities = capabilities
 })
 
-local javaConfig = {
-    cmd = { '/usr/bin/jdtls' },
-    root_dir = vim.fs.dirname(vim.fs.find({ 'gradlew', '.git', 'mvnw' }, { upward = true })[1]),
-}
-require('jdtls').start_or_attach(javaConfig)
 
 -- keymaps
 vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end)
