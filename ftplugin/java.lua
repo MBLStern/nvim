@@ -7,6 +7,19 @@ local javaConfig = {
                 "/home/Marius/ManualPackages/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar",
                 true)
         },
-    }
+    },
+    configuration = {
+        runtimes = {
+            {
+                name = "JavaSE-1.8",
+                path = "/usr/lib/jvm/java-8-openjdk/",
+            },
+            {
+                name = "JavaSE-23",
+                path = "/usr/lib/jvm/java-23-openjdk/",
+            },
+
+        }
+    },
 }
 require('jdtls').start_or_attach(javaConfig)
