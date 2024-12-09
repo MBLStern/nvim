@@ -15,8 +15,13 @@ local javaConfig = {
                 path = "/usr/lib/jvm/java-8-openjdk/",
             },
             {
+                name = "JavaSE-17",
+                path = "/usr/lib/jvm/java-17-openjdk/",
+            },
+            {
                 name = "JavaSE-23",
                 path = "/usr/lib/jvm/java-23-openjdk/",
+                default = true,
             },
 
         }
