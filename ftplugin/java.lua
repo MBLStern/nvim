@@ -95,6 +95,10 @@ local javaConfig = {
             },
         },
     },
-    capabilities = require("cmp_nvim_lsp").default_capabilities(),
+    -- default_capabilities() takes override table as argument
+    capabilities = require("cmp_nvim_lsp").default_capabilities({
+        snippetSupport = false,
+    }),
+
 }
 require('jdtls').start_or_attach(javaConfig)
