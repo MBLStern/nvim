@@ -21,22 +21,21 @@ require("lazy").setup({
         -- add your plugins here
         {
             'nvim-telescope/telescope.nvim',
-            tag = '0.1.5',
+            version = '0.1.5',
             -- or                            , branch = '0.1.x',
-            requires = { 'nvim-lua/plenary.nvim' }
+            dependencies = { 'nvim-lua/plenary.nvim' }
         },
         {
             "catppuccin/nvim",
-            as = "catppuccin",
+            name = "catppuccin",
             priority = 1000
         },
         { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
         { 'mbbill/undotree' },
         { 'tpope/vim-fugitive' },
-        {
-            'VonHeikemen/lsp-zero.nvim',
+        { 'VonHeikemen/lsp-zero.nvim',
             branch = 'v3.x',
-            requires = {
+            dependencies = {
                 { 'williamboman/mason.nvim' },
                 { 'williamboman/mason-lspconfig.nvim' },
 
@@ -54,14 +53,14 @@ require("lazy").setup({
             },
             {
                 'mfussenegger/nvim-dap',
-                requires = { "rcarriga/nvim-dap-ui",
+                dependencies = { "rcarriga/nvim-dap-ui",
                     "leoluz/nvim-dap-go",
                     "mfussenegger/nvim-jdtls",
                     "nvim-neotest/nvim-nio" },
             },
             { "ThePrimeagen/harpoon" }
         },
---        { 'Civitasv/cmake-tools.nvim' },
+       { 'Civitasv/cmake-tools.nvim' },
         {
             'lervag/vimtex',
             lazy = false,
