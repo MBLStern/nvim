@@ -1,3 +1,3 @@
-require("nvim-marius.packer")
-require("nvim-marius.remap")
-require("nvim-marius.settings")
+require("nvim-marius.config.settings")
+require("nvim-marius.config.remap")
+require("nvim-marius.config.lazy")
