@@ -29,7 +29,8 @@ return {
                 "-data",
                 workspace_dir,
             },
-            root_dir = vim.fs.dirname(vim.fs.find({ 'gradlew', '.git', 'mvnw' }, { upward = true })[1]),
+            --root_dir = vim.fs.dirname(vim.fs.find({ 'gradlew', '.git', 'mvnw' }, { upward = true })[1]),
+            root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", ".root" }),
             init_options = {
                 bundles = {
                     vim.fn.glob(
