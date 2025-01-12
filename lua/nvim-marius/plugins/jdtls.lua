@@ -40,21 +40,23 @@ return {
             },
             settings = {
                 java = {
-                    runtimes = {
-                        {
-                            name = "JavaSE-1.8",
-                            path = "/usr/lib/jvm/java-8-openjdk/",
-                        },
-                        {
-                            name = "JavaSE-17",
-                            path = "/usr/lib/jvm/java-17-openjdk/",
-                            default = true,
-                        },
-                        {
-                            name = "JavaSE-23",
-                            path = "/usr/lib/jvm/java-23-openjdk/",
-                        },
+                    configuration = {
+                        runtimes = {
+                            {
+                                name = "JavaSE-1.8",
+                                path = "/usr/lib/jvm/java-8-openjdk/",
+                            },
+                            {
+                                name = "JavaSE-17",
+                                path = "/usr/lib/jvm/java-17-openjdk/",
+                                default = true,
+                            },
+                            {
+                                name = "JavaSE-23",
+                                path = "/usr/lib/jvm/java-23-openjdk/",
+                            },
 
+                        },
                     },
                     references = {
                         includeDecompiledSources = true,
