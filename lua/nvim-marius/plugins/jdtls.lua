@@ -9,7 +9,7 @@ return {
 
         local javaConfig = {
             cmd = {
-                "java",
+                "/usr/bin/java",
                 "-Declipse.application=org.eclipse.jdt.ls.core.id1",
                 "-Dosgi.bundles.defaultStartLevel=4",
                 "-Declipse.product=org.eclipse.jdt.ls.core.product",
@@ -48,11 +48,11 @@ return {
                         {
                             name = "JavaSE-17",
                             path = "/usr/lib/jvm/java-17-openjdk/",
+                            default = true,
                         },
                         {
                             name = "JavaSE-23",
                             path = "/usr/lib/jvm/java-23-openjdk/",
-                            default = true,
                         },
 
                     },
