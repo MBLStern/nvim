@@ -1,11 +1,9 @@
 return {
-    'VonHeikemen/lsp-zero.nvim',
+    'neovim/nvim-lspconfig',
     branch = 'v3.x',
     dependencies = {
         { 'williamboman/mason.nvim' },
         { 'williamboman/mason-lspconfig.nvim' },
-        -- LSP Support
-        { 'neovim/nvim-lspconfig' },
         -- Autocompletion
         { 'hrsh7th/nvim-cmp' },
         { 'hrsh7th/cmp-buffer' },
@@ -17,70 +15,90 @@ return {
         { 'saadparwaiz1/cmp_luasnip' },
     },
     config = function()
-        local lsp_zero = require('lsp-zero')
+        local lspconfig = require('lspconfig')
+        local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-        lsp_zero.extend_lspconfig()
+        local handlers = {
+            function(server_name)
+                if server_name ~= "jdtls" then
+                    lspconfig[server_name].setup({
+                        on_attach = on_attach,
+                        capabilities = capabilities,
+                    })
+                end
+            end,
+            ["lua_ls"] = function()
+                lspconfig.lua_ls.setup {
+                    on_init = function(client)
+                        local path = client.workspace_folders[1].name
+                        if vim.loop.fs_stat(path .. '/.luarc.json') or vim.loop.fs_stat(path .. '/.luarc.jsonc') then
+                            return
+                        end
 
-        lsp_zero.on_attach(function(client, bufnr)
-            -- see :help lsp-zero-keybindings
-            -- to learn the available actions
-            lsp_zero.default_keymaps({ buffer = bufnr })
-        end)
+                        client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+                            runtime = {
+                                -- Tell the language server which version of Lua you're using
+                                -- (most likely LuaJIT in the case of Neovim)
+                                version = 'LuaJIT'
+                            },
+                            -- Make the server aware of Neovim runtime files
+                            workspace = {
+                                checkThirdParty = false,
+                                library = {
+                                    vim.env.VIMRUNTIME
+                                    -- Depending on the usage, you might want to add additional paths here.
+                                    -- "${3rd}/luv/library"
+                                    -- "${3rd}/busted/library",
+                                }
+                                -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
+                                -- library = vim.api.nvim_get_runtime_file("", true)
+                            }
+                        })
+                    end,
+                    settings = {
+                        Lua = {
+                            diagnostics = {
+                                globals = { 'vim' }
+                            },
+                        },
+                    }
+                }
+            end,
+            ["vhdl_ls"] = function()
+                lspconfig.vhdl_ls.setup({
+                    on_attach = on_attach,
+                    capabilities = capabilities
+                })
+            end,
+            ["gopls"] = function()
+                lspconfig.gopls.setup({
+                    settings = {
+                        gopls = {
+                            gofumpt = true
+                        },
+                    },
+                    on_attach = on_attach,
+                    capabilities = capabilities
+                })
+            end,
+            ["clangd"] = function()
+                lspconfig.clangd.setup({
+                    on_attach = on_attach,
+                    capabilities = capabilities
+                })
+            end,
+        }
 
-        -- to learn how to use mason.nvim with lsp-zero
-        -- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guide/integrate-with-mason-nvim.md
         require('mason').setup({})
         require('mason-lspconfig').setup({
-            ensure_installed = {},
-            handlers = {
-                lsp_zero.default_setup,
+            ensure_installed = {
+                "lua_ls",
+                "clangd",
+                "gopls",
+                "jdtls",
+                "vhdl_ls",
             },
-            require 'lspconfig'.lua_ls.setup {
-                on_init = function(client)
-                    local path = client.workspace_folders[1].name
-                    if vim.loop.fs_stat(path .. '/.luarc.json') or vim.loop.fs_stat(path .. '/.luarc.jsonc') then
-                        return
-                    end
-
-                    client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-                        runtime = {
-                            -- Tell the language server which version of Lua you're using
-                            -- (most likely LuaJIT in the case of Neovim)
-                            version = 'LuaJIT'
-                        },
-                        -- Make the server aware of Neovim runtime files
-                        workspace = {
-                            checkThirdParty = false,
-                            library = {
-                                vim.env.VIMRUNTIME
-                                -- Depending on the usage, you might want to add additional paths here.
-                                -- "${3rd}/luv/library"
-                                -- "${3rd}/busted/library",
-                            }
-                            -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-                            -- library = vim.api.nvim_get_runtime_file("", true)
-                        }
-                    })
-                end,
-                settings = {
-                    Lua = {
-                        diagnostics = {
-                            globals = { 'vim' }
-                        },
-                    },
-                }
-            },
-            require('lspconfig').gopls.setup({
-                settings = {
-                    gopls = {
-                        gofumpt = true
-                    },
-                }
-            })
-        })
-        require('lspconfig')['vhdl_ls'].setup({
-            on_attach = on_attach,
-            capabilities = capabilities
+            handlers = handlers,
         })
 
         -- luasnip setup
@@ -91,7 +109,6 @@ return {
 
         -- cmp setup
         local cmp = require("cmp")
-        lsp_zero.extend_cmp()
 
         cmp.setup({
             snippet = {
@@ -125,15 +142,6 @@ return {
                 })
         })
 
-        -- Set up lspconfig.
-        local capabilities = require('cmp_nvim_lsp').default_capabilities()
-        -- Replace <YOUR_LSP_SERVER> with each lsp server you've enabled.
-        require('lspconfig')['gopls'].setup {
-            capabilities = capabilities
-        }
-        require('lspconfig')['clangd'].setup {
-            capabilities = capabilities
-        }
 
         -- keymaps
         vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end)
