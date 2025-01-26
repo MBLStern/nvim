@@ -103,6 +103,13 @@ return {
             },
             capabilities = require("cmp_nvim_lsp").default_capabilities(),
         }
-        require('jdtls').start_or_attach(javaConfig)
+
+        vim.api.nvim_create_augroup("Java", { clear = true })
+        vim.api.nvim_create_autocmd("Filetype", {
+            pattern = "java",
+            callback = function()
+                require('jdtls').start_or_attach(javaConfig)
+            end,
+        })
     end
 }
