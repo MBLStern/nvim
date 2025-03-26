@@ -6,6 +6,12 @@ return {
         local system_os = "linux"
         local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
         local workspace_dir = home .. "/jdtls-workspace/" .. project_name
+        local bundles = {
+            vim.fn.glob(
+                "/home/Marius/ManualPackages/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar",
+                true)
+        }
+        vim.list_extend(bundles, vim.split(vim.fn.glob("/path/to/microsoft/vscode-java-test/server/*.jar", true), "\n"))
 
         local javaConfig = {
             cmd = {
@@ -31,11 +37,7 @@ return {
             --root_dir = vim.fs.dirname(vim.fs.find({ 'gradlew', '.git', 'mvnw' }, { upward = true })[1]),
             root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", ".project", ".classpath" }),
             init_options = {
-                bundles = {
-                    vim.fn.glob(
-                        "/home/Marius/ManualPackages/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar",
-                        true)
-                },
+                bundles = bundles
             },
             settings = {
                 java = {
