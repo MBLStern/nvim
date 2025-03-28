@@ -8,10 +8,12 @@ return {
         local workspace_dir = home .. "/jdtls-workspace/" .. project_name
         local bundles = {
             vim.fn.glob(
-                "/home/Marius/ManualPackages/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar",
+                home ..
+                "/ManualPackages/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar",
                 true)
         }
-        vim.list_extend(bundles, vim.split(vim.fn.glob("/path/to/microsoft/vscode-java-test/server/*.jar", true), "\n"))
+        vim.list_extend(bundles,
+            vim.split(vim.fn.glob(home .. "/ManualPackages/vscode-java-test/server/*.jar", true), "\n"))
 
         local javaConfig = {
             cmd = {
