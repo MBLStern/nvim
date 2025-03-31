@@ -2,6 +2,7 @@ return {
     "mfussenegger/nvim-jdtls",
     ft = "java",
     config = function()
+        local jdtls = require('jdtls')
         local home = os.getenv("HOME")
         local system_os = "linux"
         local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
@@ -39,7 +40,8 @@ return {
             --root_dir = vim.fs.dirname(vim.fs.find({ 'gradlew', '.git', 'mvnw' }, { upward = true })[1]),
             root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", ".project", ".classpath" }),
             init_options = {
-                bundles = bundles
+                bundles = bundles,
+                extendedClientCapabilities = jdtls.extendedClientCapabilities,
             },
             settings = {
                 java = {
@@ -106,12 +108,16 @@ return {
             },
             capabilities = require("cmp_nvim_lsp").default_capabilities(),
         }
+        local opts = { silent = true, buffer = bufnr }
+        vim.keymap.set('n', "<A-o>", jdtls.organize_imports, opts)
+        vim.keymap.set('n', "<leader>tc", jdtls.test_class, opts)
+        vim.keymap.set('n', "<leader>tn", jdtls.test_nearest_method, opts)
 
         vim.api.nvim_create_augroup("Java", { clear = true })
         vim.api.nvim_create_autocmd("Filetype", {
             pattern = "java",
             callback = function()
-                require('jdtls').start_or_attach(javaConfig)
+                jdtls.start_or_attach(javaConfig)
             end,
         })
     end
