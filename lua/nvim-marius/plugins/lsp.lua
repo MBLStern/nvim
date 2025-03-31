@@ -1,6 +1,5 @@
 return {
     'neovim/nvim-lspconfig',
-    branch = 'v3.x',
     dependencies = {
         { 'williamboman/mason.nvim' },
         { 'williamboman/mason-lspconfig.nvim' },
