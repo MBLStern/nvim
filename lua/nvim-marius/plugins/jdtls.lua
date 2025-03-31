@@ -6,7 +6,7 @@ return {
         local home = os.getenv("HOME")
         local system_os = "linux"
         local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
-        local workspace_dir = home .. "/jdtls-workspace/" .. project_name
+        local workspace_dir = home .. "/eclipse-workspace/" .. project_name
         local bundles = {
             vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar"),
         }
@@ -35,14 +35,18 @@ return {
                 "-data",
                 workspace_dir,
             },
-            --root_dir = vim.fs.dirname(vim.fs.find({ 'gradlew', '.git', 'mvnw' }, { upward = true })[1]),
-            root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", ".project", ".classpath" }),
+            --root_dir = vim.fs.dirname(vim.fs.find({ ".git", ".svn", "mvnw", "gradlew", ".project", ".classpath" }, { upward = true })[1]),
+            root_dir = require("jdtls.setup").find_root({ ".git", ".svn", "mvnw", "gradlew", ".project", ".classpath" }),
             init_options = {
                 bundles = bundles,
                 extendedClientCapabilities = jdtls.extendedClientCapabilities,
             },
             settings = {
                 java = {
+                    home = "/usr/lib/jvm/java-21-openjdk",
+                    eclipse = {
+                        downloadSources = true,
+                    },
                     configuration = {
                         runtimes = {
                             {
@@ -106,10 +110,16 @@ return {
             },
             capabilities = require("cmp_nvim_lsp").default_capabilities(),
         }
+
         local opts = { silent = true }
         vim.keymap.set('n', "<A-o>", jdtls.organize_imports, opts)
         vim.keymap.set('n', "<leader>tc", jdtls.test_class, opts)
         vim.keymap.set('n', "<leader>tn", jdtls.test_nearest_method, opts)
+
+        javaConfig["on_attach"] = function(client, bufnr)
+            jdtls.setup_dap({ hotcodereplace = "auto" })
+            require("jdtls.dap").setup_dap_main_class_configs()
+        end
 
         vim.api.nvim_create_augroup("Java", { clear = true })
         vim.api.nvim_create_autocmd("Filetype", {
