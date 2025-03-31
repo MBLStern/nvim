@@ -143,7 +143,8 @@ return {
             handlers = handlers,
         })
 
-
+        -- enable error messages
+        vim.diagnostic.config({ virtual_text = true })
 
         -- keymaps
         vim.keymap.set("n", "<leader>ff", function() vim.lsp.buf.format() end)
