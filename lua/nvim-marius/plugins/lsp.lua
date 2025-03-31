@@ -3,6 +3,7 @@ return {
     dependencies = {
         { 'williamboman/mason.nvim' },
         { 'williamboman/mason-lspconfig.nvim' },
+        { 'WhoIsSethDaniel/mason-tool-installer.nvim' },
         -- Autocompletion
         { 'hrsh7th/nvim-cmp' },
         { 'hrsh7th/cmp-buffer' },
@@ -141,6 +142,14 @@ return {
                 "vhdl_ls",
             },
             handlers = handlers,
+        })
+
+        require('mason-tool-installer').setup({
+            -- Install these linters, formatters, debuggers automatically
+            ensure_installed = {
+                'java-debug-adapter',
+                'java-test',
+            },
         })
 
         -- enable error messages

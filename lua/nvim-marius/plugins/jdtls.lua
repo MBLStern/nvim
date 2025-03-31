@@ -8,13 +8,11 @@ return {
         local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
         local workspace_dir = home .. "/jdtls-workspace/" .. project_name
         local bundles = {
-            vim.fn.glob(
-                home ..
-                "/ManualPackages/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar",
-                true)
+            vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar"),
         }
+
         vim.list_extend(bundles,
-            vim.split(vim.fn.glob(home .. "/ManualPackages/vscode-java-test/server/*.jar", true), "\n"))
+            vim.split(vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-test/*.jar", true), "\n"))
 
         local javaConfig = {
             cmd = {
@@ -108,7 +106,7 @@ return {
             },
             capabilities = require("cmp_nvim_lsp").default_capabilities(),
         }
-        local opts = { silent = true, buffer = bufnr }
+        local opts = { silent = true }
         vim.keymap.set('n', "<A-o>", jdtls.organize_imports, opts)
         vim.keymap.set('n', "<leader>tc", jdtls.test_class, opts)
         vim.keymap.set('n', "<leader>tn", jdtls.test_nearest_method, opts)
