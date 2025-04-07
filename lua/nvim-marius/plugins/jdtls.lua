@@ -7,6 +7,7 @@ return {
         local system_os = "linux"
         local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
         local workspace_dir = home .. "/eclipse-workspace/" .. project_name
+        local data_dir = home .. "/eclipse-data/" .. project_name
         local bundles = {
             vim.fn.glob(home .. "/.local/share/nvim/mason/share/java-debug-adapter/com.microsoft.java.debug.plugin.jar"),
         }
@@ -33,7 +34,7 @@ return {
                 "-configuration",
                 home .. "/.local/share/nvim/mason/packages/jdtls/config_" .. system_os,
                 "-data",
-                workspace_dir,
+                data_dir,
             },
             --root_dir = vim.fs.dirname(vim.fs.find({ ".git", ".svn", "mvnw", "gradlew", ".project", ".classpath" }, { upward = true })[1]),
             root_dir = require("jdtls.setup").find_root({ ".git", ".svn", "mvnw", "gradlew", ".project", ".classpath" }),
