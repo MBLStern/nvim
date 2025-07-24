@@ -60,6 +60,8 @@ return {
 
         local lspconfig = require('lspconfig')
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
+        local home = os.getenv('HOME')
+        local pid = vim.fn.getpid()
 
         local handlers = {
             function(server_name)
@@ -70,8 +72,9 @@ return {
                     })
                 end
             end,
+
             ["lua_ls"] = function()
-                lspconfig.lua_ls.setup {
+                lspconfig.lua_ls.setup({
                     on_init = function(client)
                         local path = client.workspace_folders[1].name
                         if vim.loop.fs_stat(path .. '/.luarc.json') or vim.loop.fs_stat(path .. '/.luarc.jsonc') then
@@ -105,14 +108,16 @@ return {
                             },
                         },
                     }
-                }
+                })
             end,
+
             ["vhdl_ls"] = function()
                 lspconfig.vhdl_ls.setup({
                     on_attach = on_attach,
                     capabilities = capabilities
                 })
             end,
+
             ["gopls"] = function()
                 lspconfig.gopls.setup({
                     settings = {
@@ -124,12 +129,29 @@ return {
                     capabilities = capabilities
                 })
             end,
+
             ["clangd"] = function()
                 lspconfig.clangd.setup({
                     on_attach = on_attach,
-                    capabilities = capabilities
+                    capabilities = capabilities,
+                    cmd = { 'clangd', '--background-index', '--clang-tidy', '--log=verbose' },
+                    init_options = {
+                        fallbackFlags = { '-std=c++17' },
+                    },
                 })
             end,
+
+            ["omnisharp"] = lspconfig.omnisharp.setup({
+                cmd = { home .. "/.local/share/nvim/mason/packages/omnisharp/OmniSharp", "--languageserver", "--hostPID", tostring(pid) },
+                on_attach = on_attach,
+                on_init = on_init,
+                capabilities = capabilities,
+                enable_roslyn_analysers = true,
+                enable_import_completion = true,
+                organize_imports_on_format = true,
+                enable_decompilation_support = true,
+                filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets', 'tproj', 'slngen', 'fproj' },
+            })
         }
 
         require('mason').setup({})
@@ -140,6 +162,7 @@ return {
                 "gopls",
                 "jdtls",
                 "vhdl_ls",
+                "omnisharp",
             },
             handlers = handlers,
         })

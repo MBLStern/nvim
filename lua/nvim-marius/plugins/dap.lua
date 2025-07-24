@@ -4,6 +4,7 @@ return {
         "leoluz/nvim-dap-go",
         "nvim-neotest/nvim-nio" },
     config = function()
+        local home = os.getenv('HOME')
         local dap = require('dap')
 
         -- dapui setup
@@ -31,6 +32,12 @@ return {
             args = { "-i", "dap" }
         }
 
+        dap.adapters.coreclr = {
+            type = 'executable',
+            command = home .. '/.local/share/nvim/mason/bin/netcoredbg',
+            args = { '--interpreter=vscode' }
+        }
+
         -- language configurations
         dap.configurations.cpp = {
             {
@@ -46,6 +53,17 @@ return {
         }
 
         dap.configurations.c = dap.configurations.cpp
+
+        dap.configurations.cs = {
+            {
+                type = "coreclr",
+                name = "launch - netcoredbg",
+                request = "launch",
+                program = function()
+                    return vim.fn.input('Path to dll', vim.fn.getcwd() .. '/bin/Debug/', 'file')
+                end,
+            },
+        }
 
         dap.configurations.rust = dap.configurations.cpp
 
