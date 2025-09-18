@@ -58,101 +58,93 @@ return {
 
         -- lsp setup
 
-        local lspconfig = require('lspconfig')
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
         local home = os.getenv('HOME')
         local pid = vim.fn.getpid()
 
-        local handlers = {
-            function(server_name)
-                if server_name ~= "jdtls" then
-                    lspconfig[server_name].setup({
-                        on_attach = on_attach,
-                        capabilities = capabilities,
-                    })
+        vim.lsp.config('lua_ls', {
+            on_init = function(client)
+                if client.workspace_folders then
+                    local path = client.workspace_folders[1].name
+                    if
+                        path ~= vim.fn.stdpath('config')
+                        and (vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc'))
+                    then
+                        return
+                    end
                 end
-            end,
-
-            ["lua_ls"] = function()
-                lspconfig.lua_ls.setup({
-                    on_init = function(client)
-                        local path = client.workspace_folders[1].name
-                        if vim.loop.fs_stat(path .. '/.luarc.json') or vim.loop.fs_stat(path .. '/.luarc.jsonc') then
-                            return
-                        end
-
-                        client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-                            runtime = {
-                                -- Tell the language server which version of Lua you're using
-                                -- (most likely LuaJIT in the case of Neovim)
-                                version = 'LuaJIT'
-                            },
-                            -- Make the server aware of Neovim runtime files
-                            workspace = {
-                                checkThirdParty = false,
-                                library = {
-                                    vim.env.VIMRUNTIME
-                                    -- Depending on the usage, you might want to add additional paths here.
-                                    -- "${3rd}/luv/library"
-                                    -- "${3rd}/busted/library",
-                                }
-                                -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-                                -- library = vim.api.nvim_get_runtime_file("", true)
-                            }
-                        })
-                    end,
-                    settings = {
-                        Lua = {
-                            diagnostics = {
-                                globals = { 'vim' }
-                            },
+                client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+                    runtime = {
+                        version = 'LuaJIT',
+                        path = {
+                            'lua/?.lua',
+                            'lua/?/init.lua',
                         },
+                    },
+                    workspace = {
+                        checkThirdParty = false,
+                        library = {
+                            vim.env.VIMRUNTIME
+                        }
                     }
                 })
             end,
-
-            ["vhdl_ls"] = function()
-                lspconfig.vhdl_ls.setup({
-                    on_attach = on_attach,
-                    capabilities = capabilities
-                })
-            end,
-
-            ["gopls"] = function()
-                lspconfig.gopls.setup({
-                    settings = {
-                        gopls = {
-                            gofumpt = true
-                        },
+            settings = {
+                Lua = {
+                    diagnostics = {
+                        globals = { 'vim' }
                     },
-                    on_attach = on_attach,
-                    capabilities = capabilities
-                })
-            end,
+                },
+            }
 
-            ["clangd"] = function()
-                lspconfig.clangd.setup({
-                    on_attach = on_attach,
-                    capabilities = capabilities,
-                    cmd = { 'clangd', '--background-index', '--clang-tidy', '--log=verbose' },
-                    init_options = {
-                        fallbackFlags = { '-std=c++17' },
-                    },
-                })
-            end,
+        })
 
-            ["omnisharp"] = lspconfig.omnisharp.setup({
-                cmd = { home .. "/.local/share/nvim/mason/packages/omnisharp/OmniSharp", "--languageserver", "--hostPID", tostring(pid) },
+        vim.lsp.config("vhdl_ls", {
+            on_attach = on_attach,
+            capabilities = capabilities
+        })
+
+        vim.lsp.config("gopls", {
+            settings = {
+                gopls = {
+                    gofumpt = true
+                },
+            },
+            on_attach = on_attach,
+            capabilities = capabilities
+        })
+
+        if string.find(os.getenv("PATH") or "none", "esp%-idf") ~= nil then
+            vim.lsp.config("clangd", {
                 on_attach = on_attach,
-                on_init = on_init,
                 capabilities = capabilities,
-                enable_roslyn_analysers = true,
-                enable_import_completion = true,
-                organize_imports_on_format = true,
-                enable_decompilation_support = true,
-                filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets', 'tproj', 'slngen', 'fproj' },
+                cmd = { home .. "/.espressif/tools/esp-clang/esp-19.1.2_20250312/esp-clang/bin/clangd", '--background-index', '--clang-tidy', '--log=verbose' },
+                init_options = {
+                    fallbackFlags = { '-std=c++17' },
+                },
             })
-        }
+        else
+            vim.lsp.config("clangd", {
+                on_attach = on_attach,
+                capabilities = capabilities,
+                cmd = { 'clangd', '--background-index', '--clang-tidy', '--log=verbose' },
+                init_options = {
+                    fallbackFlags = { '-std=c++17' },
+                },
+            })
+        end
+
+        vim.lsp.config("omnisharp", {
+            cmd = { home .. "/.local/share/nvim/mason/packages/omnisharp/OmniSharp", "--languageserver", "--hostPID", tostring(pid) },
+            on_attach = on_attach,
+            on_init = on_init,
+            capabilities = capabilities,
+            enable_roslyn_analysers = true,
+            enable_import_completion = true,
+            organize_imports_on_format = true,
+            enable_decompilation_support = true,
+            filetypes = { 'cs', 'vb', 'csproj', 'sln', 'slnx', 'props', 'csx', 'targets', 'tproj', 'slngen', 'fproj' }
+        })
 
         require('mason').setup({})
         require('mason-lspconfig').setup({
@@ -164,7 +156,6 @@ return {
                 "vhdl_ls",
                 "omnisharp",
             },
-            handlers = handlers,
         })
 
         require('mason-tool-installer').setup({
